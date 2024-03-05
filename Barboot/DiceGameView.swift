@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GypsyDiceGameView: View {
+struct DiceGameView: View {
     @State private var diceOne = Int.random(in: 1...6)
     @State private var diceTwo = Int.random(in: 1...6)
     @State private var diceThree = Int.random(in: 1...6)
@@ -74,6 +74,9 @@ struct GypsyDiceGameView: View {
             if diceResults[0] == 6 {
                 totalPoints = lostPoints // Връщаме загубените точки при 666
                 currentPoints = 0
+            } else if diceResults[0] == 1 {
+                // Check if all dice show 1 for special scoring
+                currentPoints += 1000
             } else {
                 let points = diceResults[0] * 100 * diceResults.count
                 currentPoints += points
@@ -81,6 +84,7 @@ struct GypsyDiceGameView: View {
         case 2: // Два еднакви зара
             if diceResults.contains(1) {
                 currentPoints += 100 * (diceResults.filter { $0 == 1 }.count)
+               
             }
             if diceResults.contains(5) {
                 currentPoints += 50 * (diceResults.filter { $0 == 5 }.count)
@@ -100,6 +104,7 @@ struct GypsyDiceGameView: View {
             currentPoints = 0 // Зануляване на текущите точки, ако няма промяна
         }
     }
+
 
     func savePoints() {
         if currentPoints > 0 { // Добавете точките само ако има какво да се добави
@@ -128,6 +133,6 @@ struct DiceView: View {
 
 struct GypsyDiceGameView_Previews: PreviewProvider {
     static var previews: some View {
-        GypsyDiceGameView()
+        DiceGameView()
     }
 }

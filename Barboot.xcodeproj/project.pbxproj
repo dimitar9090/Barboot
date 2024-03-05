@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D15BF40C2B93C87300DDFEFC /* BarbootApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15BF40B2B93C87300DDFEFC /* BarbootApp.swift */; };
-		D15BF40E2B93C87300DDFEFC /* GypsyDiceGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15BF40D2B93C87300DDFEFC /* GypsyDiceGameView.swift */; };
+		D15BF40E2B93C87300DDFEFC /* DiceGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */; };
 		D15BF4102B93C87400DDFEFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15BF40F2B93C87400DDFEFC /* Assets.xcassets */; };
 		D15BF4132B93C87400DDFEFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15BF4122B93C87400DDFEFC /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* Begin PBXFileReference section */
 		D15BF4082B93C87300DDFEFC /* Barboot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Barboot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D15BF40B2B93C87300DDFEFC /* BarbootApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarbootApp.swift; sourceTree = "<group>"; };
-		D15BF40D2B93C87300DDFEFC /* GypsyDiceGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GypsyDiceGameView.swift; sourceTree = "<group>"; };
+		D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceGameView.swift; sourceTree = "<group>"; };
 		D15BF40F2B93C87400DDFEFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D15BF4122B93C87400DDFEFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,7 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				D15BF40B2B93C87300DDFEFC /* BarbootApp.swift */,
-				D15BF40D2B93C87300DDFEFC /* GypsyDiceGameView.swift */,
+				D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */,
 				D15BF40F2B93C87400DDFEFC /* Assets.xcassets */,
 				D15BF4112B93C87400DDFEFC /* Preview Content */,
 			);
@@ -137,7 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D15BF40E2B93C87300DDFEFC /* GypsyDiceGameView.swift in Sources */,
+				D15BF40E2B93C87300DDFEFC /* DiceGameView.swift in Sources */,
 				D15BF40C2B93C87300DDFEFC /* BarbootApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

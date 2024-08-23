@@ -13,6 +13,8 @@ struct DiceGameView: View {
     @State private var holdDiceTwo = false
     @State private var holdDiceThree = false
     @State private var resetAfterZeroPoints = false
+    @State private var tokens = 10 // Добавяме токени
+    @State private var gameOver = false // Флаг за показване на Game Over
 
     var body: some View {
         VStack {
@@ -24,32 +26,54 @@ struct DiceGameView: View {
                 .font(.title)
             Text("Общо точки: \(totalPoints)")
                 .font(.title)
+            Text("Токени: \(tokens)") // Изписване на токените
+                .font(.title)
             Spacer()
-            HStack(spacing: 5.0) {
-                DiceView(number: diceOne, rolling: $rolling, held: holdDiceOne)
-                DiceView(number: diceTwo, rolling: $rolling, held: holdDiceTwo)
-                DiceView(number: diceThree, rolling: $rolling, held: holdDiceThree)
-            }
-            Spacer()
-            Button(action: {
-                if resetAfterZeroPoints {
-                    resetAfterZeroPoints = false
-                }
-                rollDice()
-            }) {
-                Text(rolling ? "Въртене..." : "Хвърли заровете")
+            if gameOver {
+                Text("Game Over")
                     .font(.largeTitle)
-                    .foregroundColor(.white)
+                    .foregroundColor(.red)
                     .padding()
-                    .background(rolling ? Color.blue : Color.green)
-                    .cornerRadius(10)
-                    .disabled(rolling)
+                Text("Общ брой точки: \(totalPoints)")
+                    .font(.title)
+                    .padding()
+                Button("ОК") {
+                    resetGame() // Рестартиране на играта при натискане на бутона
+                }
+                .font(.title)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            } else {
+                HStack(spacing: 5.0) {
+                    DiceView(number: diceOne, rolling: $rolling, held: holdDiceOne)
+                    DiceView(number: diceTwo, rolling: $rolling, held: holdDiceTwo)
+                    DiceView(number: diceThree, rolling: $rolling, held: holdDiceThree)
+                }
+                Spacer()
+                if tokens > 0 {
+                    Button(action: {
+                        if resetAfterZeroPoints {
+                            resetAfterZeroPoints = false
+                        }
+                        rollDice()
+                    }) {
+                        Text(rolling ? "Въртене..." : "Хвърли заровете")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(rolling ? Color.blue : Color.green)
+                            .cornerRadius(10)
+                            .disabled(rolling)
+                    }
+                    Button("Запази точките") {
+                        savePoints()
+                    }
+                    .font(.largeTitle)
+                    .disabled(rolling || currentPoints == 0)
+                }
             }
-            Button("Запази точките") {
-                savePoints()
-            }
-            .font(.largeTitle)
-            .disabled(rolling || currentPoints == 0)
             Spacer()
         }
         .background(Color.pink)
@@ -84,7 +108,6 @@ struct DiceGameView: View {
         let diceResults = [diceOne, diceTwo, diceThree].sorted()
         lastRollPoints = 0
         
-        // Проверка за специалните комбинации при хвърляне и на трите зара
         if !holdDiceOne && !holdDiceTwo && !holdDiceThree {
             if diceResults == [1, 1, 1] {
                 lastRollPoints = 1000
@@ -99,13 +122,16 @@ struct DiceGameView: View {
             } else if diceResults == [6, 6, 6] {
                 currentPoints = 0
                 resetAfterZeroPoints = true
+                tokens -= 1 // Губим 1 токен
+                if tokens <= 0 {
+                    gameOver = true
+                }
                 return
             } else if diceResults == [1, 2, 3] || diceResults == [2, 3, 4] || diceResults == [3, 4, 5] || diceResults == [4, 5, 6] {
                 lastRollPoints = 200
             }
         }
 
-        // Изчисляване на точките за отделните зарове, ако не е имало специална комбинация
         if lastRollPoints == 0 {
             var newHoldDiceOne = false
             var newHoldDiceTwo = false
@@ -144,6 +170,10 @@ struct DiceGameView: View {
                 holdDiceTwo = false
                 holdDiceThree = false
                 resetAfterZeroPoints = true
+                tokens -= 1 // Губим 1 токен
+                if tokens <= 0 {
+                    gameOver = true
+                }
             }
         } else {
             currentPoints += lastRollPoints
@@ -169,11 +199,28 @@ struct DiceGameView: View {
         if currentPoints > 0 {
             totalPoints += currentPoints
             lostPoints = totalPoints
+            tokens -= 1 // Губим 1 токен
+            if tokens <= 0 {
+                gameOver = true
+            }
         }
         currentPoints = 0
         holdDiceOne = false
         holdDiceTwo = false
         holdDiceThree = false
+    }
+    
+    func resetGame() {
+        tokens = 10
+        totalPoints = 0
+        currentPoints = 0
+        holdDiceOne = false
+        holdDiceTwo = false
+        holdDiceThree = false
+        diceOne = Int.random(in: 1...6)
+        diceTwo = Int.random(in: 1...6)
+        diceThree = Int.random(in: 1...6)
+        gameOver = false // Рестартираме флага за играта
     }
 }
 

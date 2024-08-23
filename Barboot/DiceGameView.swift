@@ -7,7 +7,11 @@ struct DiceGameView: View {
     @State private var rolling = false
     @State private var currentPoints = 0
     @State private var totalPoints = 0
+    @State private var lastRollPoints = 0
     @State private var lostPoints = 0
+    @State private var holdDiceOne = false
+    @State private var holdDiceTwo = false
+    @State private var holdDiceThree = false
 
     var body: some View {
         VStack {
@@ -21,9 +25,9 @@ struct DiceGameView: View {
                 .font(.title)
             Spacer()
             HStack(spacing: 5.0) {
-                DiceView(number: diceOne, rolling: $rolling)
-                DiceView(number: diceTwo, rolling: $rolling)
-                DiceView(number: diceThree, rolling: $rolling)
+                DiceView(number: diceOne, rolling: $rolling, held: holdDiceOne)
+                DiceView(number: diceTwo, rolling: $rolling, held: holdDiceTwo)
+                DiceView(number: diceThree, rolling: $rolling, held: holdDiceThree)
             }
             Spacer()
             Button(action: rollDice) {
@@ -47,13 +51,19 @@ struct DiceGameView: View {
     
     func rollDice() {
         rolling = true
-        let times = Int.random(in: 10...15) // Random number of changes
+        let times = Int.random(in: 10...15)
         var currentCount = 0
         
         Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { timer in
-            self.diceOne = Int.random(in: 1...6)
-            self.diceTwo = Int.random(in: 1...6)
-            self.diceThree = Int.random(in: 1...6)
+            if !self.holdDiceOne {
+                self.diceOne = Int.random(in: 1...6)
+            }
+            if !self.holdDiceTwo {
+                self.diceTwo = Int.random(in: 1...6)
+            }
+            if !self.holdDiceThree {
+                self.diceThree = Int.random(in: 1...6)
+            }
             
             currentCount += 1
             if currentCount == times {
@@ -65,73 +75,90 @@ struct DiceGameView: View {
     }
     
     func calculatePoints() {
-        let previousPoints = currentPoints // Запазете текущите точки преди пресмятането
-        let diceResults = [diceOne, diceTwo, diceThree].sorted()
-        let uniqueResults = Set(diceResults)
+        lastRollPoints = 0 // Нулираме точките от предишното хвърляне
+        var newHoldDiceOne = false
+        var newHoldDiceTwo = false
+        var newHoldDiceThree = false
         
-        switch uniqueResults.count {
-        case 1: // Всички зарове са еднакви
-            if diceResults[0] == 6 {
-                totalPoints = lostPoints // Връщаме загубените точки при 666
-                currentPoints = 0
-            } else if diceResults[0] == 1 {
-                // Check if all dice show 1 for special scoring
-                currentPoints += 1000
-            } else {
-                let points = diceResults[0] * 100 * diceResults.count
-                currentPoints += points
-            }
-        case 2: // Два еднакви зара
-            if diceResults.contains(1) {
-                currentPoints += 100 * (diceResults.filter { $0 == 1 }.count)
-               
-            }
-            if diceResults.contains(5) {
-                currentPoints += 50 * (diceResults.filter { $0 == 5 }.count)
-            }
-        default: // Всички зарове са различни
-            let diceString = diceResults.map { String($0) }.joined()
-            switch diceString {
-            case "123", "234", "345", "456", "135", "246":
-                currentPoints += 200
-            default:
-                currentPoints += (diceResults.contains(1) ? 100 : 0) + (diceResults.contains(5) ? 50 : 0)
-            }
+        if !holdDiceOne {
+            lastRollPoints += calculatePointsForDice(diceOne)
+            newHoldDiceOne = isWinningDice(diceOne)
         }
-
-        // Ако точките не са се увеличили след пресмятането, занулете текущите точки
-        if currentPoints == previousPoints {
-            currentPoints = 0 // Зануляване на текущите точки, ако няма промяна
+        
+        if !holdDiceTwo {
+            lastRollPoints += calculatePointsForDice(diceTwo)
+            newHoldDiceTwo = isWinningDice(diceTwo)
+        }
+        
+        if !holdDiceThree {
+            lastRollPoints += calculatePointsForDice(diceThree)
+            newHoldDiceThree = isWinningDice(diceThree)
+        }
+        
+        currentPoints += lastRollPoints
+        
+        holdDiceOne = newHoldDiceOne || holdDiceOne
+        holdDiceTwo = newHoldDiceTwo || holdDiceTwo
+        holdDiceThree = newHoldDiceThree || holdDiceThree
+        
+        // Ако всички зарове са печеливши, играчът има право да хвърли отново и трите
+        if holdDiceOne && holdDiceTwo && holdDiceThree {
+            holdDiceOne = false
+            holdDiceTwo = false
+            holdDiceThree = false
+        }
+        
+        // Ако няма печеливши зарове при това хвърляне, зануляваме точките
+        if lastRollPoints == 0 {
+            currentPoints = 0
         }
     }
-
+    
+    func calculatePointsForDice(_ number: Int) -> Int {
+        switch number {
+        case 1:
+            return 100
+        case 5:
+            return 50
+        default:
+            return 0
+        }
+    }
+    
+    func isWinningDice(_ number: Int) -> Bool {
+        return number == 1 || number == 5
+    }
 
     func savePoints() {
-        if currentPoints > 0 { // Добавете точките само ако има какво да се добави
+        if currentPoints > 0 {
             totalPoints += currentPoints
-            lostPoints = totalPoints // Запазваме текущите точки за възможно връщане при 666
+            lostPoints = totalPoints
         }
-        currentPoints = 0 // Зануляване на текущите точки след запазване
+        currentPoints = 0
+        holdDiceOne = false
+        holdDiceTwo = false
+        holdDiceThree = false
     }
-
 }
 
 struct DiceView: View {
     let number: Int
     @Binding var rolling: Bool
+    let held: Bool
     
     var body: some View {
         Image(systemName: "die.face.\(number).fill")
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 100, height: 100)
-            .rotationEffect(.degrees(rolling ? 360 : 0))
-            .animation(rolling ? Animation.linear(duration: 0.15).repeatForever(autoreverses: false) : .default, value: rolling)
+            .rotationEffect(.degrees(rolling && !held ? 360 : 0))
+            .animation(rolling && !held ? Animation.linear(duration: 0.15).repeatForever(autoreverses: false) : .default, value: rolling)
+            .opacity(held ? 0.5 : 1.0)
             .padding()
     }
 }
 
-struct GypsyDiceGameView_Previews: PreviewProvider {
+struct DiceGameView_Previews: PreviewProvider {
     static var previews: some View {
         DiceGameView()
     }

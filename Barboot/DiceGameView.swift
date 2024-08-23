@@ -12,6 +12,7 @@ struct DiceGameView: View {
     @State private var holdDiceOne = false
     @State private var holdDiceTwo = false
     @State private var holdDiceThree = false
+    @State private var resetAfterZeroPoints = false
 
     var body: some View {
         VStack {
@@ -30,7 +31,12 @@ struct DiceGameView: View {
                 DiceView(number: diceThree, rolling: $rolling, held: holdDiceThree)
             }
             Spacer()
-            Button(action: rollDice) {
+            Button(action: {
+                if resetAfterZeroPoints {
+                    resetAfterZeroPoints = false
+                }
+                rollDice()
+            }) {
                 Text(rolling ? "Въртене..." : "Хвърли заровете")
                     .font(.largeTitle)
                     .foregroundColor(.white)
@@ -75,42 +81,72 @@ struct DiceGameView: View {
     }
     
     func calculatePoints() {
-        lastRollPoints = 0 // Нулираме точките от предишното хвърляне
-        var newHoldDiceOne = false
-        var newHoldDiceTwo = false
-        var newHoldDiceThree = false
+        let diceResults = [diceOne, diceTwo, diceThree].sorted()
+        lastRollPoints = 0
         
-        if !holdDiceOne {
-            lastRollPoints += calculatePointsForDice(diceOne)
-            newHoldDiceOne = isWinningDice(diceOne)
+        // Проверка за специалните комбинации при хвърляне и на трите зара
+        if !holdDiceOne && !holdDiceTwo && !holdDiceThree {
+            if diceResults == [1, 1, 1] {
+                lastRollPoints = 1000
+            } else if diceResults == [2, 2, 2] {
+                lastRollPoints = 200
+            } else if diceResults == [3, 3, 3] {
+                lastRollPoints = 300
+            } else if diceResults == [4, 4, 4] {
+                lastRollPoints = 400
+            } else if diceResults == [5, 5, 5] {
+                lastRollPoints = 500
+            } else if diceResults == [6, 6, 6] {
+                currentPoints = 0
+                resetAfterZeroPoints = true
+                return
+            } else if diceResults == [1, 2, 3] || diceResults == [2, 3, 4] || diceResults == [3, 4, 5] || diceResults == [4, 5, 6] {
+                lastRollPoints = 200
+            }
         }
-        
-        if !holdDiceTwo {
-            lastRollPoints += calculatePointsForDice(diceTwo)
-            newHoldDiceTwo = isWinningDice(diceTwo)
-        }
-        
-        if !holdDiceThree {
-            lastRollPoints += calculatePointsForDice(diceThree)
-            newHoldDiceThree = isWinningDice(diceThree)
-        }
-        
-        currentPoints += lastRollPoints
-        
-        holdDiceOne = newHoldDiceOne || holdDiceOne
-        holdDiceTwo = newHoldDiceTwo || holdDiceTwo
-        holdDiceThree = newHoldDiceThree || holdDiceThree
-        
-        // Ако всички зарове са печеливши, играчът има право да хвърли отново и трите
-        if holdDiceOne && holdDiceTwo && holdDiceThree {
-            holdDiceOne = false
-            holdDiceTwo = false
-            holdDiceThree = false
-        }
-        
-        // Ако няма печеливши зарове при това хвърляне, зануляваме точките
+
+        // Изчисляване на точките за отделните зарове, ако не е имало специална комбинация
         if lastRollPoints == 0 {
-            currentPoints = 0
+            var newHoldDiceOne = false
+            var newHoldDiceTwo = false
+            var newHoldDiceThree = false
+            
+            if !holdDiceOne {
+                lastRollPoints += calculatePointsForDice(diceOne)
+                newHoldDiceOne = isWinningDice(diceOne)
+            }
+            
+            if !holdDiceTwo {
+                lastRollPoints += calculatePointsForDice(diceTwo)
+                newHoldDiceTwo = isWinningDice(diceTwo)
+            }
+            
+            if !holdDiceThree {
+                lastRollPoints += calculatePointsForDice(diceThree)
+                newHoldDiceThree = isWinningDice(diceThree)
+            }
+            
+            currentPoints += lastRollPoints
+            
+            holdDiceOne = newHoldDiceOne || holdDiceOne
+            holdDiceTwo = newHoldDiceTwo || holdDiceTwo
+            holdDiceThree = newHoldDiceThree || holdDiceThree
+            
+            if holdDiceOne && holdDiceTwo && holdDiceThree {
+                holdDiceOne = false
+                holdDiceTwo = false
+                holdDiceThree = false
+            }
+            
+            if lastRollPoints == 0 {
+                currentPoints = 0
+                holdDiceOne = false
+                holdDiceTwo = false
+                holdDiceThree = false
+                resetAfterZeroPoints = true
+            }
+        } else {
+            currentPoints += lastRollPoints
         }
     }
     

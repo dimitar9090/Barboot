@@ -22,20 +22,115 @@ struct DiceGameView: View {
 
     var body: some View {
         ZStack {
-            Color.pink
+            Color.red
                 .ignoresSafeArea()
 
             VStack {
+                HStack {
+                    Text("Барбут")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color.blue, Color.purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.yellow.opacity(1))
+                                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                        )
+                    Menu {
+                        Text("1 = 100")
+                        Text("5 = 50")
+                        Text("1+1+1 = 1000")
+                        Text("2+2+2 = 200")
+                        Text("3+3+3 = 300")
+                        Text("4+4+4 = 400")
+                        Text("5+5+5 = 500")
+                        Text("6+6+6 = 000")
+                        Text("1+2+3 = 200")
+                        Text("2+3+4 = 200")
+                        Text("3+4+5 = 200")
+                        Text("4+5+6 = 200")
+                        
+                        } label: {
+                        Image(systemName: "info.square.fill")
+                                .font(.largeTitle)
+                        .foregroundColor(.black)
+                        }
+                        .padding(.leading, 20)
+                    
+                }
                 Spacer()
-                Text("Барбут")
-                    .font(.largeTitle)
-                Spacer()
-                Text("Текущи точки: \(currentPoints)")
-                    .font(.title)
-                Text("Общо точки: \(totalPoints)")
-                    .font(.title)
-                Text("Токени: \(tokens)")
-                    .font(.title)
+                HStack(spacing: 20) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "star.square.fill")
+                            .font(.title2)
+                            .foregroundColor(.yellow)
+                        Text("\(currentPoints)")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            colors: [Color.orange, Color.red],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(15)
+                    .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)
+                    
+                    HStack(spacing: 5) {
+                        Image(systemName: "star.square.on.square.fill")
+                            .font(.title2)
+                            .foregroundColor(.yellow)
+                        Text("\(totalPoints)")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            colors: [Color.orange, Color.red],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(15)
+                    .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)
+                    
+                    HStack(spacing: 5) {
+                        Image(systemName: "star.circle")
+                            .font(.title2)
+                            .foregroundColor(.yellow)
+                        Text("\(tokens)")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            colors: [Color.orange, Color.red],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(15)
+                    .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)
+                }
+                .background(Color.white.opacity(0.2))
+                .cornerRadius(20)
+                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
                 Spacer()
                 if gameOver {
                     Text("Game Over")
@@ -93,7 +188,7 @@ struct DiceGameView: View {
                                 .font(.largeTitle)
                                 .foregroundColor(.white)
                                 .padding()
-                                .background(rolling ? Color.blue : Color.green)
+                                .background(rolling ? Color.blue : Color.orange)
                                 .cornerRadius(10)
                                 .disabled(rolling)
                         }
@@ -121,8 +216,8 @@ struct DiceGameView: View {
                         }
                         .font(.title)
                         .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
+                        .background(Color.brown)
+                        .foregroundColor(.black)
                         .cornerRadius(10)
                     }
                 
@@ -314,11 +409,12 @@ struct DiceView: View {
         Image(systemName: "die.face.\(number).fill")
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 80, height: 80)
+            .frame(width: 100, height: 100)
             .rotationEffect(.degrees(rolling && !held ? 360 : 0))
             .animation(rolling && !held ? Animation.linear(duration: 0.15).repeatForever(autoreverses: false) : .default, value: rolling)
             .opacity(held ? 0.5 : 1.0)
             .padding()
+        
     }
 }
 struct PlayerScore: Identifiable, Codable {

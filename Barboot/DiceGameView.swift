@@ -16,6 +16,7 @@ struct DiceGameView: View {
     @State private var tokens = 10
     @State private var gameOver = false
     
+    
     @State private var playerName = ""
     @State private var showLeaderboard = false
     @State private var leaderboard: [PlayerScore] = []
@@ -27,7 +28,7 @@ struct DiceGameView: View {
 
             VStack {
                 HStack {
-                    Text("Барбут")
+                    Text("Barboot")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundStyle(
@@ -64,6 +65,17 @@ struct DiceGameView: View {
                         .foregroundColor(.black)
                         }
                         .padding(.leading, 20)
+                    Menu {
+                        Text("1.Rolling 3 of a kind dices gives you 2 tokes")
+                        Text("2.Rolling a straight sequence gives you 1 token")
+                        
+                        
+                        } label: {
+                        Image(systemName: "b.circle.fill")
+                                .font(.largeTitle)
+                        .foregroundColor(.black)
+                        }
+                        
                     
                 }
                 Spacer()
@@ -137,17 +149,17 @@ struct DiceGameView: View {
                         .font(.largeTitle)
                         .foregroundColor(.red)
                         .padding()
-                    Text("Общ брой точки: \(totalPoints)")
+                    Text("Points: \(totalPoints)")
                         .font(.title)
                         .padding()
                     
-                    TextField("Вашето име", text: $playerName)
+                    TextField("Your Name", text: $playerName)
                         .font(.title)
                         .padding()
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
                     HStack {
-                        Button("Запази резултата") {
+                        Button("Save Result") {
                             if !playerName.isEmpty {
                                 saveScore()
                             }
@@ -159,7 +171,7 @@ struct DiceGameView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         
-                        Button("Пропусни") {
+                        Button("Cancel") {
                             resetGame()
                         }
                         .font(.title)
@@ -184,7 +196,7 @@ struct DiceGameView: View {
                             }
                             rollDice()
                         }) {
-                            Text(rolling ? "Въртене..." : "Хвърли заровете")
+                            Text(rolling ? "Rolling..." : "Throw Dices")
                                 .font(.largeTitle)
                                 .foregroundColor(.white)
                                 .padding()
@@ -192,7 +204,7 @@ struct DiceGameView: View {
                                 .cornerRadius(10)
                                 .disabled(rolling)
                         }
-                        Button("Запази точките") {
+                        Button("Save Points") {
                             savePoints()
                         }
                         .font(.largeTitle)
@@ -202,7 +214,7 @@ struct DiceGameView: View {
                 Spacer()
                 
                 HStack {
-                    Button("Класация") {
+                    Button("Leaderboard") {
                         showLeaderboard = true
                         }
                         .font(.title)
@@ -211,7 +223,7 @@ struct DiceGameView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                                     
-                    Button("Нова игра") {
+                    Button("New Game") {
                         resetGame()
                         }
                         .font(.title)
@@ -259,28 +271,34 @@ struct DiceGameView: View {
     func calculatePoints() {
         let diceResults = [diceOne, diceTwo, diceThree].sorted()
         lastRollPoints = 0
-        
+
         if !holdDiceOne && !holdDiceTwo && !holdDiceThree {
             if diceResults == [1, 1, 1] {
                 lastRollPoints = 1000
+                tokens += 2
             } else if diceResults == [2, 2, 2] {
                 lastRollPoints = 200
+                tokens += 2
             } else if diceResults == [3, 3, 3] {
                 lastRollPoints = 300
+                tokens += 2
             } else if diceResults == [4, 4, 4] {
                 lastRollPoints = 400
+                tokens += 2
             } else if diceResults == [5, 5, 5] {
                 lastRollPoints = 500
+                tokens += 2
             } else if diceResults == [6, 6, 6] {
                 currentPoints = 0
                 resetAfterZeroPoints = true
-                tokens -= 1 // Губим 1 токен
+                tokens -= 1
                 if tokens <= 0 {
                     gameOver = true
                 }
                 return
             } else if diceResults == [1, 2, 3] || diceResults == [2, 3, 4] || diceResults == [3, 4, 5] || diceResults == [4, 5, 6] {
                 lastRollPoints = 200
+                tokens += 1 // Award 1 bonus token for a sequence
             }
         }
 
@@ -322,7 +340,7 @@ struct DiceGameView: View {
                 holdDiceTwo = false
                 holdDiceThree = false
                 resetAfterZeroPoints = true
-                tokens -= 1 // Губим 1 токен
+                tokens -= 1 // Lose 1 token
                 if tokens <= 0 {
                     gameOver = true
                 }
@@ -428,7 +446,7 @@ struct LeaderboardView: View {
     
     var body: some View {
         VStack {
-            Text("Класация")
+            Text("Leaderboard")
                 .font(.largeTitle)
                 .padding()
                 .foregroundColor(.white) // Променете цвета на текста, ако е необходимо
@@ -437,7 +455,7 @@ struct LeaderboardView: View {
                 HStack {
                     Text(score.name)
                     Spacer()
-                    Text("\(score.score) точки")
+                    Text("\(score.score) points")
                 }
             }
             .listStyle(InsetGroupedListStyle())

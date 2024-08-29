@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 struct DiceGameView: View {
     @State private var diceOne = Int.random(in: 1...6)
@@ -15,11 +16,13 @@ struct DiceGameView: View {
     @State private var resetAfterZeroPoints = false
     @State private var tokens = 10
     @State private var gameOver = false
+    @State private var showGameRules = false
     
     
     @State private var playerName = ""
     @State private var showLeaderboard = false
     @State private var leaderboard: [PlayerScore] = []
+    @State private var audioPlayer: AVAudioPlayer?
 
     var body: some View {
         ZStack {
@@ -60,7 +63,7 @@ struct DiceGameView: View {
                         Text("4+5+6 = 200")
                         
                         } label: {
-                        Image(systemName: "info.square.fill")
+                        Image(systemName: "p.circle.fill")
                                 .font(.largeTitle)
                         .foregroundColor(.black)
                         }
@@ -75,7 +78,15 @@ struct DiceGameView: View {
                                 .font(.largeTitle)
                         .foregroundColor(.black)
                         }
-                        
+                    Menu {
+                        Button("Barboot game rules"){
+                            showGameRules = true
+                        }
+                        } label: {
+                        Image(systemName: "info.square.fill")
+                                .font(.largeTitle)
+                        .foregroundColor(.black)
+                        }
                     
                 }
                 Spacer()
@@ -234,6 +245,9 @@ struct DiceGameView: View {
                     }
                 
             }
+            .sheet(isPresented: $showGameRules) {
+                        GameRulesView()
+                    }
         }
         .sheet(isPresented: $showLeaderboard) {
             LeaderboardView(leaderboard: leaderboard)
@@ -243,7 +257,10 @@ struct DiceGameView: View {
         }
     }
     
+    
+    
     func rollDice() {
+        playDiceRollSound()
         rolling = true
         let times = Int.random(in: 10...15)
         var currentCount = 0
@@ -268,6 +285,51 @@ struct DiceGameView: View {
         }
     }
     
+    func playDiceRollSound() {
+        guard let soundURL = Bundle.main.url(forResource: "diceRoll", withExtension: "mp3") else {
+            print("Dice roll sound file not found.")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("Failed to play dice roll sound: \(error.localizedDescription)")
+        }
+    }
+
+    func playBonusTokenSound() {
+        guard let soundURL = Bundle.main.url(forResource: "bonusToken", withExtension: "mp3") else {
+            print("Bonus token sound file not found.")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("Failed to play bonus token sound: \(error.localizedDescription)")
+        }
+    }
+    
+    func playSavePointsSound() {
+        guard let soundURL = Bundle.main.url(forResource: "savePoints", withExtension: "mp3") else {
+            print("Save points sound file not found.")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("Failed to play save points sound: \(error.localizedDescription)")
+        }
+    }
+    
     func calculatePoints() {
         let diceResults = [diceOne, diceTwo, diceThree].sorted()
         lastRollPoints = 0
@@ -276,18 +338,23 @@ struct DiceGameView: View {
             if diceResults == [1, 1, 1] {
                 lastRollPoints = 1000
                 tokens += 2
+                playBonusTokenSound() // Play sound for bonus tokens
             } else if diceResults == [2, 2, 2] {
                 lastRollPoints = 200
                 tokens += 2
+                playBonusTokenSound() // Play sound for bonus tokens
             } else if diceResults == [3, 3, 3] {
                 lastRollPoints = 300
                 tokens += 2
+                playBonusTokenSound() // Play sound for bonus tokens
             } else if diceResults == [4, 4, 4] {
                 lastRollPoints = 400
                 tokens += 2
+                playBonusTokenSound() // Play sound for bonus tokens
             } else if diceResults == [5, 5, 5] {
                 lastRollPoints = 500
                 tokens += 2
+                playBonusTokenSound() // Play sound for bonus tokens
             } else if diceResults == [6, 6, 6] {
                 currentPoints = 0
                 resetAfterZeroPoints = true
@@ -299,6 +366,7 @@ struct DiceGameView: View {
             } else if diceResults == [1, 2, 3] || diceResults == [2, 3, 4] || diceResults == [3, 4, 5] || diceResults == [4, 5, 6] {
                 lastRollPoints = 200
                 tokens += 1 // Award 1 bonus token for a sequence
+                playBonusTokenSound() // Play sound for bonus tokens
             }
         }
 
@@ -349,7 +417,6 @@ struct DiceGameView: View {
             currentPoints += lastRollPoints
         }
     }
-    
     func calculatePointsForDice(_ number: Int) -> Int {
         switch number {
         case 1:
@@ -373,6 +440,7 @@ struct DiceGameView: View {
             if tokens <= 0 {
                 gameOver = true
             }
+            playSavePointsSound()
         }
         currentPoints = 0
         holdDiceOne = false
@@ -466,6 +534,55 @@ struct LeaderboardView: View {
     }
 }
 
+struct GameRulesView: View {
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Barboot Game Rules")
+                    .font(.largeTitle)
+                    .padding(.bottom, 10)
+                
+                Text("The goal of the game is to accumulate as many points as possible by rolling dice. The game ends when you run out of tokens, and your final score is saved to the leaderboard.")
+                    .padding(.bottom, 10)
+                
+                Text("Rolling the Dice:")
+                    .font(.headline)
+                Text("Each roll involves three dice. You can hold one or more dice to keep them from being rerolled.")
+                
+                Text("Scoring Points:")
+                    .font(.headline)
+                Text("1. Single Dice Scores:")
+                Text("   - Rolling a 1 gives you 100 points.")
+                Text("   - Rolling a 5 gives you 50 points.")
+                
+                Text("2. Three of a Kind:")
+                Text("   - Rolling three 1s gives you 1000 points and 2 bonus tokens.")
+                Text("   - Rolling three 2s gives you 200 points and 2 bonus tokens.")
+                Text("   - Rolling three 3s gives you 300 points and 2 bonus tokens.")
+                Text("   - Rolling three 4s gives you 400 points and 2 bonus tokens.")
+                Text("   - Rolling three 5s gives you 500 points and 2 bonus tokens.")
+                Text("   - Rolling three 6s resets your current points to 0 and loses 1 token.")
+                
+                Text("3. Straight Sequence:")
+                Text("   - Rolling any straight sequence (1-2-3, 2-3-4, 3-4-5, 4-5-6) gives you 200 points and 1 bonus token.")
+                
+                Text("Saving Points:")
+                    .font(.headline)
+                Text("After rolling, you can choose to save your points by clicking the 'Save Points' button.")
+                
+                Text("Game Over:")
+                    .font(.headline)
+                Text("The game ends when you run out of tokens.")
+                
+                Text("Leaderboard:")
+                    .font(.headline)
+                Text("The leaderboard displays the names and scores of players who have saved their scores.")
+            }
+            .padding()
+        }
+        .background(Color.white)
+    }
+}
 struct DiceGameView_Previews: PreviewProvider {
     static var previews: some View {
         DiceGameView()

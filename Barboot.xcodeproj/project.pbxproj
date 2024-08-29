@@ -11,6 +11,9 @@
 		D15BF40E2B93C87300DDFEFC /* DiceGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */; };
 		D15BF4102B93C87400DDFEFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15BF40F2B93C87400DDFEFC /* Assets.xcassets */; };
 		D15BF4132B93C87400DDFEFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D15BF4122B93C87400DDFEFC /* Preview Assets.xcassets */; };
+		D160842A2C8116EC00E50889 /* diceRoll.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D16084292C8116EC00E50889 /* diceRoll.mp3 */; };
+		D160842C2C811A7700E50889 /* bonusToken.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D160842B2C811A7700E50889 /* bonusToken.mp3 */; };
+		D160842E2C811C4400E50889 /* savePoints.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D160842D2C811C4400E50889 /* savePoints.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +22,9 @@
 		D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceGameView.swift; sourceTree = "<group>"; };
 		D15BF40F2B93C87400DDFEFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D15BF4122B93C87400DDFEFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D16084292C8116EC00E50889 /* diceRoll.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = diceRoll.mp3; sourceTree = "<group>"; };
+		D160842B2C811A7700E50889 /* bonusToken.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bonusToken.mp3; sourceTree = "<group>"; };
+		D160842D2C811C4400E50889 /* savePoints.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = savePoints.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +60,7 @@
 				D15BF40B2B93C87300DDFEFC /* BarbootApp.swift */,
 				D15BF40D2B93C87300DDFEFC /* DiceGameView.swift */,
 				D15BF40F2B93C87400DDFEFC /* Assets.xcassets */,
+				D16084282C8116CD00E50889 /* Sounds */,
 				D15BF4112B93C87400DDFEFC /* Preview Content */,
 			);
 			path = Barboot;
@@ -65,6 +72,16 @@
 				D15BF4122B93C87400DDFEFC /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		D16084282C8116CD00E50889 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				D160842B2C811A7700E50889 /* bonusToken.mp3 */,
+				D16084292C8116EC00E50889 /* diceRoll.mp3 */,
+				D160842D2C811C4400E50889 /* savePoints.mp3 */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,8 +142,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D160842E2C811C4400E50889 /* savePoints.mp3 in Resources */,
+				D160842A2C8116EC00E50889 /* diceRoll.mp3 in Resources */,
 				D15BF4132B93C87400DDFEFC /* Preview Assets.xcassets in Resources */,
 				D15BF4102B93C87400DDFEFC /* Assets.xcassets in Resources */,
+				D160842C2C811A7700E50889 /* bonusToken.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

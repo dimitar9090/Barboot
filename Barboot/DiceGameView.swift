@@ -31,23 +31,27 @@ struct DiceGameView: View {
 
             VStack {
                 HStack {
-                    Text("Barboot")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                    Text("Barboot")// Creates a Text view displaying the string "Barboot".
+                        .font(.largeTitle)// Sets the font size of the text to large title.
+                        .fontWeight(.bold)// Makes the font weight bold for emphasis.
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [Color.blue, Color.purple],
                                 startPoint: .leading,
                                 endPoint: .trailing
-                            )
+                            )// Applies a gradient style to the text's foreground color.
+                            // The gradient transitions from blue to purple, going from left to right.
                         )
-                        .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)
-                        .padding()
+                        .shadow(color: Color.black.opacity(0.3), radius: 5, x: 3, y: 3)// Adds a shadow effect to the text with a black color at 30% opacity.
+                    // The shadow is blurred with a radius of 5 points and offset by 3 points horizontally and vertically.
+                        .padding()// Adds default padding around the text to create space between the text and its container.
                         .background(
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.yellow.opacity(1))
                                 .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                        )
+                        )// Sets the background of the text to a rounded rectangle.
+                    // The rectangle has rounded corners with a radius of 10 points and is filled with a fully opaque yellow color.
+                    // The rectangle also has a shadow effect with black color at 20% opacity, a radius of 5 points, and an offset of 5 points vertically.
                     Menu {
                         Text("1 = 100")
                         Text("5 = 50")
